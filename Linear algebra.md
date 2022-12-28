@@ -162,3 +162,26 @@ x_{1} & x_{1} & x_{1}
   torch.norm(x)
   #tensor(26.8142, dtype=torch.float64)
   ```
+
+  ### `Matrix multiplication`
+    $$C_{i,k} = \sum_{j}a_{i,j}b_{j,k}$$
+  - Can on only multiply 2 matrices if the number of columns of the first matrix is equal to the number of columns of the second matrix
+  - The result of the mul is a matrix that has the same number of rows of the first matrix and number of columns of the second matrix
+    ```python
+    import torch
+    import numpy as np
+    import tensorflow as tf
+
+    a = np.array([[3, 4], [5, 6], [7, 8]])
+    b = np.array([[1, 3], [2, 4]])
+    np.matmul(a, b)
+    #array([[11, 25], [17, 39], [23, 53]])
+    a_pt = torch.from_numpy(a)
+    b_pt = torch.from_numpy(b)
+    torch.matmul(a_pt, b_pt)
+    #tensor([[11, 25], [17, 39],[23, 53]], dtype=torch.int32)
+    a_tf = tf.convert_to_tensor(a)
+    b_tf = tf.convert_to_tensor(b)
+    tf.matmul(a_tf, b_tf)
+    #array([[11, 25], [17, 39], [23, 53]])>
+    ```
