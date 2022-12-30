@@ -1,12 +1,5 @@
 # `Linear Algebra`
 
-Jill generator:
-- Mark 1: b1 = 1*a
-- Mark 2: b2 = 4*a
-- 1.a+30.1 = 4.a
-  <=> a+30=4a
-  <=> a = 10
-
 ## `Tensor`
 - Is a generalization of vectors and matrices to any number of dimensions
 - For example
@@ -185,3 +178,55 @@ x_{1} & x_{1} & x_{1}
     tf.matmul(a_tf, b_tf)
     #array([[11, 25], [17, 39], [23, 53]])>
     ```
+### `Some special matrices`
+- `Symmetric matrix`: has to be square, $X^T=X$
+- `Identity matrix`: every element along diagonal is 1, rest is 0, $X.I_n=I_n.X=X$
+- `Diagonal matrix` is a matrix that has non-zero elements along the diagonal line and zeros everywhere else
+
+### `Inversion of matrices`
+- A way to solve linea equations computionally, beside subtitution and elimination
+- Inverse matrix: $X^{-1}$
+- $X^{-1}.X=I_n$
+  $$y = Xw$$
+  - y is the matrix of outcomes
+  - X is the matrix of known features
+  - w is the matrix of unknowns
+  $$X^{-1}.y = X^{-1}.X.w$$
+  $$<=> X^{-1}.y = w$$
+
+  $$\begin{cases}
+    4b + 2a = 4\\
+    -5b -3a = -7
+  \end{cases}$$
+  $$X = \begin{bmatrix}
+    4&2\\
+    -5&-3
+  \end{bmatrix}$$
+  $$
+  y = \begin{bmatrix}
+    4\\
+    7
+  \end{bmatrix}
+  $$
+  ```python
+  import numpy as np
+  X = np.array([[4, 2], [-5, -3]])
+  y = np.array([4, 7])
+  X_inv = np.linalg.inv(X)
+  np.dot(X, y)
+  #array([[6., 7.], [-10., -14.]])
+
+  import torch 
+  X = torch.tensor([[4,2], [-5, -3]], dtype=float)
+  y = torch.tensor([4, 7], dtype=float)
+  X_inv = torch.inverse(X)
+  torch.matmul(X_inv, y)
+  #tensor([ 13., -24.], dtype=torch.float64)
+  ```
+- Matrix can only be reversed if it's `square`, not `singular` and not `dependent`.
+
+## `Orthogonal matrices`
+- In orthogonal matrices, orthogonal vectors make up all rows and columns
+  $$A^TA=AA^T=I_n$$
+  $$A^T=A^{-1}$$
+
