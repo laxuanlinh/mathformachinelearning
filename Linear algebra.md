@@ -229,4 +229,3 @@ x_{1} & x_{1} & x_{1}
 - In orthogonal matrices, orthogonal vectors make up all rows and columns
   $$A^TA=AA^T=I_n$$
   $$A^T=A^{-1}$$
-
