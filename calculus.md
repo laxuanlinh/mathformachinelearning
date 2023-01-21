@@ -78,6 +78,99 @@
 
 ## `Derivative notation`
 - First derivative operator:
-  $dy\over dx$
+  $d\over dx$
 - Second derivative operator:
-  $d^2y\over dx$
+  $d^2\over dx$
+
+## `Derivative of a Constant`
+- Assuming $c$ is a constant, ${d\over dx}c=0$
+## `The Power rule`
+- The formula:
+  $$
+    {d\over dx}x^n = nx^{n-1}
+  $$
+- For example:
+  $$
+  {d\over dx}x^4 = 4x^3
+  $$
+## `The Constant multiple rule`
+- The formula:
+  $$
+  {d\over dx}(cy) = c{d\over dx}(y) = c {dy\over dx}
+  $$
+- For example:
+  $$y = x^4$$
+  $${dy\over dx}=4x^3$$
+  $${d\over dx}2y=2{dy\over dx}=8x^3$$
+## `The Sum rule`
+- The formula:
+  $$
+  {d(y+w)\over dx} = {dy\over dx}+{dw\over dx}
+  $$
+## `The Product rule`
+- The formula:
+  $$
+  {d(wz)\over dx} = w{dz\over dx} + z{dw\over dx}
+  $$
+## `The Quotient (Fraction) rule`
+- The formula:
+  $$
+  {d\over dx}({w\over y}) = {z{dw\over dx} - w{dz\over dx}\over z^2}
+  $$
+## `The Chain rule`
+- Applications in:
+  - Gradient decent 
+  - Backpropagation
+- The formula:
+  $$
+  {dy\over dx} = {dy\over du}{du\over dx}
+  $$
+- For example:
+  - $y=(5x+25)^3$
+  - Let $u = 5x+25$
+  - $y = u^3$
+  - $y$ is a function of $u$ and $u$ is a function of $x$
+  $$y = (2x^2+8)^2$$
+  $$u = 2x^2+8$$
+  $$y=u^2$$
+  $${dy\over dx} = {dy\over du}{du\over dx} = 2u 4x = 16x^3+64x$$
+## `The Power rule on a function chain`
+- The formula:
+  $$
+  {d\over dx}u^n = nu^{n-1}{du\over dx}
+  $$
+- For example:
+  $$y=(3x+1)^2$$
+  $${dy\over dx} = 2(3x+1)3$$
+  $${dy\over dx} = 18x+6$$
+
+## `Gradient`
+- If we have a function that has multiple variables $x, y, z...$, we can calculate partial derivatives of the function with the respect to one variable with all other variables as constants.
+- A vector that contains all partial derivatives of a function is called gradient.
+- The gradient points in the direction of maximum change
+- Its magnitude is equal to the maxinum rate of change
+- Basically gradient is the derivative of a multivariable function
+
+## `Automatic Differentiation`
+- There are many way to do differentiation
+  - Manual
+  - Numeric
+  - Symbolic
+  - Automatic
+  ```python
+  import torch
+  import numpy as np
+
+  #require the gradient to be tracked on this tensor
+  #we don't do this by default to save memory but when we need to do operations on x, we need to track its gradient
+  #we track this contagiously, meaning any variables created as a result of x are also tracked
+  x = torch.tensor(5.0, requires_grad=True)
+
+  y = x**2
+
+  #autodiff in backward mode
+  y.backward()
+
+  print(x.grad)
+  #10
+  ```
