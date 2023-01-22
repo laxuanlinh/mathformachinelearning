@@ -1,15 +1,11 @@
 import torch
 import numpy as np
+import tensorflow as tf
 
-#require the gradient to be tracked on this tensor
-#we don't do this by default to save memory but when we need to do operations on x, we need to track its gradient
-#we track this contagiously, meaning any variables created as a result of x are also tracked
-x = torch.tensor(5.0, requires_grad=True)
-
-y = x**2
-
-#autodiff
-y.backward()
-
-print(x.grad)
-
+x = tf.Variable(5.0)
+with tf.GradientTape() as t:
+	#track forward pass
+	t.watch(x)
+	y = x**2
+#auto diff
+print(t.gradient(y, x))
