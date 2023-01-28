@@ -40,4 +40,4 @@ for epoch in range(epochs):
 print(C)
 print(m)
 print(b)
-regression_plot(x, y, m,b, 'Optmized graph')
+regression_plot(x, y, m,b, 'Optimized graph')
