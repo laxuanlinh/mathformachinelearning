@@ -291,3 +291,93 @@ for epoch in range(epochs):
     optimizer.step()
 visualize(xs, ys, m, b, C)
 ```
+## `Backpropagation`
+- Chain rule of partial derivatives of cost with respect to model parameters extends to deep neural networks, which may have 1000s of layers
+
+## `Higher order derivatives`
+- Used to accelarate through gradient decent
+  $$z = x^2+5xy+2y^2$$
+  $${dz\over dx}=2x+5y$$
+  $${dz\over dy}=5x+4y$$
+  $${d^2z\over dx}=2$$
+  $${d^2z\over dy}=4$$
+  $${d^2z\over dxdy}=5+0=5$$
+  $${d^2z\over dydx}=0+5=5$$
+
+  $$z=x^3+2xy$$
+  $${dz\over dx}=3x^2+2y$$
+  $${dz\over dy}=2x$$
+  $${d^2z\over dx}=6x$$
+  $${d^2z\over dy}=0$$
+
+## `Receiver-operating characteristic`
+- Given 4 photos, the machine learning algorithm needs to determine which one is a hot dog $\hat{y}$ and compare to actual fact $y$
+- Make a table where predictions of each photo is a column, if the predictions of others are higher then it's 1, else 0. If it's 1-1 or 0-0 then it's TP and TN
+  
+| y             | $\hat{y}$   | 0.3 threshold | 0.5 threshold | 0.6 threshold |
+| -----------   | ----------- | -----------   | -----------   | -----------   |
+| 0(not hot dog)| 0.3         | 0(TN)         | 0(TN)         | 0(TN)         |
+| 1(hot dog)    | 0.5         | 1(TP)         | 0(FN)         | 0(FN)         |
+| 0(not hot dog)| 0.6         | 1(FP)         | 1(FP)         | 0(TN)         |
+| 1(hot dog)    | 0.9         | 1(TP)         | 1(TP)         | 1(TP)         |
+- There is no point considering 0.9 threshold because everything will be 0
+  $$TruePositiveRate={TP\over TP+FN}={2\over 2+0}=1$$
+  $$FalsePositiveRate={FP\over FP+TN}={1\over 1+1}=0.5$$
+- If TNR and TPR are 1 then it's perfect
+- The higher the curve is, the larger the area below it is, the closer it's to perfect.
+
+## `Integral calculus`
+- The study of areas under curves 
+  $$\int 2xdx$$
+- $2x$ is the function to integrate, $dx$ is the variable to integrate along
+
+## `The power rule of integral calculus`
+$$
+\int x^n dx = {x^{n+1}\over n+1}+C
+$$
+- C is a constant that may have been lost by differentiation
+
+## `Constant multiple rule`
+$$
+\int cf(x)dx = c \int f(x)dx +C
+$$
+
+## `The sum rule`
+$$
+\int (f(x) + g(x))dx = \int f(x)dx + \int g(x)dx +C
+$$
+
+$$
+\int x^5 dx = {x^6\over 6}+C
+$$
+$$\int 12x^5dx = {12x^6\over 7}+C$$
+$$\int (12x^5-x)dx = \int 12x^5 - \int xdx = 2x^6-{x^2\over 2}+C$$
+
+## `Definite integral`
+$$y={1\over 2}x$$
+$$\int{1\over 2}xdx = {x^2\over 4}+C$$
+$$\int^2_1{1\over 2}xdx = (1+C)-({1\over 4}+C) = {3\over4}$$
+
+  ```python
+  from scipy.integrate import quad
+
+  def f(x):
+    return x/2
+  print(quad(x, 1, 2))
+  # (0.75, 8.326672684688674e-15)
+  # 0.75 is the result
+  # 326672684688674e-15 is the estimation of error
+  ```
+  $$\int 2xdx = x^2$$
+  $$\int^4_3 2xdx= 4^2 - 3^2 = 7$$
+## `Find areas under curves`
+```python
+from sklearn.metrics import auc
+
+xs = [0, 0, 0.5, 0.5, 1]
+ys = [0, 0.5, 0.5, 1, 1]
+
+print(auc(xs, ys))
+# 0.75 
+# the area under the curve made up of all points
+```
