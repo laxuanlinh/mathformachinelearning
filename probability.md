@@ -33,3 +33,6 @@ $$P{same card} = \frac{1}{52}$$
 $$P=P(any)P(samecard)=\frac{1}{52}$$
 $$\binom 52 = \frac{5!}{2!(5-2)!}=10$$
 $$P=\frac{10}{2^5} = 0.3125$$
+
+## The law of large number
+- The larger the number we run the tests, the closer we get to the expected results
