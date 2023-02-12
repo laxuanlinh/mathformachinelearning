@@ -126,6 +126,141 @@ $$P=\frac{10}{2^5} = 0.3125$$
 
   heads_count = np.random.binomial(5, 0.5, 1000)
   heads_count.sort()
-  print(np.median(heads_count))
+  np.median(heads_count)
   #3.0
   ```
+## `Mode`
+- The value that occurs most frequently
+  ```python
+  import scipy.stats as st
+
+  st.mode(heads_count)
+  # ModeResult(mode=array([2]), count=array([334])) 
+  ```
+## `Quantiles: Percentiles, quartiles and deciles`
+- `Median` is the most well-known quantile
+  ```python
+  np.median(heads_count)
+  # 3.0
+  np.quantile(heads_count, 0.5)
+  # 3.0
+  ```
+- `Percentiles` divide the distribution at any point out of 100.
+  - If we want to see the top 5%, we divide at 95th percentile
+  - If we want to see the threshold for the top 1%, we devide at 99th percentile
+- `Quartiles` divide the distribution into quarters at the 25th, 50th and 75th percentile
+  ```python
+  np.percentile(heads_count, [25, 50, 75])
+  # [2. 3. 3.]
+  ```
+- `Deciles` (means tenth) divide the distribution into 10 segments
+  ```python
+  np.percentile(heads_count, [i for i in range(10, 100, 10)])
+  # [1. 1. 2. 2. 2. 3. 3. 3. 4.]
+  ```
+- Skewed distributions drag the mean away from the center and toward the edge
+  ```python
+  x = st.skewnorm.rvs(10, size=1000)
+  ```
+# `The box and whisker plots`
+- It's another tool to plot the distributions
+- The box edges define the `inter-quatile range (IQR)`
+- The whisker ranges are determined by the furthest data points within 1.5 x IQR
+  ```python
+  import seaborn as sns
+  import matplotlib.pyplot as plt
+  import numpy as np
+  import scipy.stats as st
+
+  sns.set(style='whitegrid')
+  x = st.skewnorm.rvs(10, size=1000)
+  sns.boxplot(x = x)
+  plt.show()
+
+  q = np.percentile(x, [25, 50, 75])
+  # [0.33229548 0.66228792 1.17018088]
+
+  IQR= q[2] - q[0]
+  # 0.8378854014194564
+
+  lowest_whisker = q[0] - 1.5*IQR
+  # -0.9245326211391839
+  np.min(x)
+  # -0.19540695486545973
+  # the min should be within the lowest whisker
+
+  upper_whisker = q[2] + 1.5*IQR
+  # 2.427008984538642
+  ```
+- There are several values beyond the upper whisker, these are the outliers and plotted as individual points
+
+## `Variance`
+- It's a measure of dispersion
+  $$
+  \sigma^2 = \frac{\sum_{i=1}^n(x_i-\overline{x})^2}{n}
+  $$
+  - $x_i$ is each instance
+  - $\overline x$ is mean 
+  - $n$ is the number of instances
+  ```python
+  x = st.skewnorm.rvs(10, size=1000)
+  xbar = np.mean(x)
+  # 0.804847888858779
+
+  squared_diff = [(x_i - xbar)**2 for x_i in x]
+
+  variance = np.sum(squared_diff) / len(x)
+  # 0.3736374776235986
+  np.var(x)
+  # 0.3736374776235986
+  ```
+
+## `Standard deviation`
+- Measure of the amount of variation or dispersion.
+- The lower the standard deviation, the closer the values tend to be to the mean
+  $$\sigma = \sqrt{\sigma^2}$$
+  ```python
+  sigma = variance**(1/2)
+  # 0.5867545501284294
+  np.std(x)
+  # 0.5867545501284294
+  ```
+## `Standard error`
+- Measure of how different the population mean is likely to be from a sample mean
+- This shows us how the sample mean could vary if we repeat the study multiple times within the same population
+  $$\sigma_{\overline{x}} = \frac{\sigma}{\sqrt{n}}$$
+  ```python
+  st.sem(x)
+  ```
+## `Coveriance` 
+- If we have x and y are 2 collections of pair data
+  $$
+  cov(x, y)=\frac{\sum_i^n(x_i-\overline{x})(y_i-\overline{y})}{n}
+  $$
+  ```python
+  x = iris.sepai_length
+  y = iris.petal_length
+  np.cov(x, y, ddof=0)
+  # [[0.68112222, 1.26582][1.26582, 3.09550267]] 
+  # 0.68112222 is variance of x
+  # 3.09550267 is variance of y
+  # 1.26582 is the coveriance between the 2
+  ```
+- If the coveriance is positive, meaning there is a positive relationship between the 2 and via versa
+- For example if x gets larger, y also gets larger
+- The less related, the closer coveriance to 0
+  ```python
+  np.cov(x=sepai_length, y=petal_width)
+  # [[0.68112222 0.51282889][0.51282889 0.57713289]]
+  ```
+## `Correlation`
+- Correlation is preferred when it comes to relatedness between 2 dataset because it doesn't get affected by the change of scale
+  $$
+  \rho_{x,y} = \frac{cov(x,y)}{\sigma_x\sigma_y}
+  $$
+  ```python
+  st.pearsonr(iris.sepal_length, iris.petal_length)
+  # (0.8717537758865833, 1.0386674194496954e-47)
+  # 0.87 is the correlation
+  ``
+- The strongest correlations are 1 and -1, 0 means no correlation
