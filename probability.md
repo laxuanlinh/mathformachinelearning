@@ -264,3 +264,98 @@ $$P=\frac{10}{2^5} = 0.3125$$
   # 0.87 is the correlation
   ``
 - The strongest correlations are 1 and -1, 0 means no correlation
+
+## `Joint and marginal probability distribution`
+- Joint probability is when we want to see the probability of 2 variables x and y happen at the same time P(x=x,y=y)
+- Marginal probability is when we want to see the total probability of 1 variable
+- For example, given a table of probability for discrete variables
+  - x=1 if having the disease, x=0 if not
+  - y=1 if having the symtoms, y=0 if not
+    | y\x | 0   | 1   | 
+    | --- | --- | --- |
+    | 0   | 0.5 | 0.1 |
+    | 1   | 0.1 | 0.3 |
+  - The total probability of all scenarios is $\sum P(x=x,y=y)=1$
+  - The joint probability of people who have the symtoms and disease is $P(x=1,y=1)=0.3$
+  - The marginal probability of people who have symtoms is $P(y=1)=0.1+0.3=0.4$
+  - The marginal probability of people who don't have disease is $P(x=0)=0.5+0.1=0.6$
+- For continuous variables, we can integrate:
+  $$p(x) = \int p(x,y)dy$$
+## `Conditional probability`
+- Probability of an outcome given that another outcome already occurred
+  $$P(y=y|x=x)=\frac{P(y=y,x=x)}{P(x=x)}$$
+- Example: If we flip a coin twice and the first flip is already a head, then the probability of second flip to be head is:
+  $$P(f2=heads,f1=heads)=0.25$$
+  $$P(f2=heads|f1=heads)=0.25/0.5=0.5$$
+- So the probability of having heads on the second flip is still 50% because it's independent from the first flip
+
+## `Chain rule of probability`
+  $$P(y|x)=\frac{P(y,x)}{P(x)}$$
+  $$P(y,x)=P(y|x)P(x)$$
+  $$P(z,y,x)=P(z|y,x)P(y|x)P(x)$$
+
+## `Conditional independence`
+- x and y are independent given z ($x\perp y|z$)
+  $$p(x=x, y=y|z=z)=P(x=x|z=z)P(y=y|z=z)$$
+- Probability of wrestler winning gold medal (x) and weightlifter winning gold medal (y) if both of them comes from the country with doping scandal (z)
+
+## `Uniform distribution`
+- Uniform distribution has the constant probability across all of its outcome
+- For example: every day I take a bus to work and this bus could be late from 2-10 mins, the probability of late for *n* min is equally distributed. If the bus is 7 mins late then I'm late for work, so what is the probability of being late?
+  $$P(late)=\frac{10-7}{10-2}=\frac{3}{8}$$
+  - The deviation from the average waiting time is
+  $$\sigma = \sqrt{\frac{(10+2)^2}{12}}=2.31mins$$
+
+## `Gaussian: Normal and standard normal`
+- Gaussian aka normal distribution is the bell-shape distribution
+- The normal distribution has mean = 0
+- If the standard deviation = 1 then it's a standard normal distribution N(0, 1)
+  
+# `The central limit theorem`
+```python
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+def sample_mean(dist, sample_size, n_samples):
+    sample_means = []
+    for i in range(n_samples):
+        sample = np.random.choice(dist, sample_size, replace=False)
+        sample_means.append(sample.mean())
+    return sample_means
+
+x = np.random.normal(size=10000)
+sns.displot(sample_mean(x, 10, 1000), color='green')
+plt.xlim(-1.5, 1.5)
+
+plt.show()
+```
+- The distribution of means is always close to normal distribution
+```python
+x = st.skewnorm.rvs(10, size=10000)
+sns.displot(sample_mean(x, 1000, 1000), color='green')
+plt.show()
+```
+- Even with the skewed distribution, the mean of random choices are still normally distributed
+
+## `Log-normal`
+- The distribution of a variable is Log-normal when its logarithm is normally distributed
+
+## `Exponential distribution`
+- Usually describes the distribution of time between events where events happens continously and independently at a constant average rate
+- Laplace distribution is similar to exponential distribution but instead of just positive values, it also has a mirror portion of negative values
+
+## `Binomial and Multinomial`
+- Binomial distribution summerizes the number of trials or observations when each trial has the same probability
+- Multinomial disitrbution is the generailization of binomial 
+
+## `Poisson`
+- To count data like the number of cars driving by in a min
+  
+## `Preprocessing data for model input`
+- Use Box-Cox transformation to normalize non-normal variables so we can run broader tests
+- Standard normal distribution is ideal for machine learning:
+  - Subtract mean so that $\mu=0$
+  - Divide by standard deviation so that $\sigma=1$
+  - In neural network, we can pass inputs through a normalization layer
+- Encode binary variables as 0 and 1
