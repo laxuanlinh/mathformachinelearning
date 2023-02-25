@@ -359,3 +359,117 @@ plt.show()
   - Divide by standard deviation so that $\sigma=1$
   - In neural network, we can pass inputs through a normalization layer
 - Encode binary variables as 0 and 1
+
+## `Information theory`
+- Likelier events have less info than rare ones, for example: the sun rises in the morning every day
+  $$I(x)=-logP(x)$$
+  ```python
+  import numpy as np
+
+  def self_info(p):
+      return -1*np.log(p)
+
+  print(self_info(1))
+  # -0.0 no information
+  print(self_info(0.1))
+  # 2.3025850929940455
+  print(self_info(0.001))
+  # 6.907755278982137
+  ```
+- The units of self information vary from bit to shannon
+
+## `Shannon and differential entropy`
+- To quantify the self-information of a probability distribution, we use Shannon entropy, denoted $H(x)$ or $H(P)$
+- Low entropy means the outcome is highly certain
+- High entropy means the outcome is highly uncertain
+- Shannon entropy for a binary random variable (coin flip) is:
+  $$(p-1)log(1-p)-plogp$$
+  ```python
+  def binary_entropy(p):
+      return (p-1)*np.log(1-p)-p*np.log(p)
+
+  print(binary_entropy(0.99999))
+  # close to always tail (edge of the distribution)
+  # almost certain tail => low entropy
+  # 0.00012512920464901166
+  print(binary_entropy(0.0001))
+  # close to always heads
+  # 0.0010210290370309323
+  print(binary_entropy(0.9))
+  # head 90% of the times
+  # 0.3250829733914482
+  print(binary_entropy(0.5))
+  # head 50% => highly uncertain
+  # 0.6931471805599453
+  ```
+## `Kullback-Leibler divergence and Cross-entropy`
+- KL divergence enables us to quantify the shannon entropy of 2 probability distributions over the same random variable $x$
+- Cross-entropy is a concept derived from KL divergence, provides us with a cross-entropy cost function
+- This cost function is ubiquitous 
+
+## `Statistics`
+- Examine data distribution
+- Examine relationships between data
+- Compare model performance
+- Ensure model isn't biased against particular demographic groups
+- Bayesian stats can be used when:
+  - The sample sizes are not very large
+  - Typically have evidence for priors
+  ```python
+  import numpy as np
+  import scipy.stats as st
+  import matplotlib.pyplot as plt
+  import seaborn as sns
+
+  np.random.seed(42)
+  x = st.skewnorm.rvs(10, size=1000)
+
+  xbar = x.mean()
+  median = np.median(x)
+  std = x.std()
+  # standard deviation
+  stde = st.sem(x, ddof=0)
+  # standard error
+
+  fig, ax = plt.subplots()
+  plt.axvline(x = xbar, color='orange')
+  plt.axvline(x = xbar+std, color='green')
+  plt.axvline(x = xbar-std, color='green')
+  plt.hist(x, color='lightgray')
+  # the 2 green lines are 2 standard deviation lines
+  # the line in the middle is mean line
+  plt.show()
+  ```
+## `z-scores and outliners`
+- A z-score represents how many `standard deviations` aways from the mean a data point is
+  $$z=\frac{x_i-\mu}{\sigma}$$
+- If a data point lies more than 3 standard deviations away from the mean an outlier
+
+## `p-value`
+- A p-value is to quantify the probability that an observation would occur by chance a lone
+- For example: Given 10000 exam results, there are 67 results attained z-score above 2.5 and 69 results attained z-score below -2.5. Thus if we pick a random sample, the probability of this sample to be outside of 2.5 deviation is:
+  $$\frac{67+69}{10000}=0.0136$$
+- If we increase the size from 10k to infinity, the probability of sample outside of 2.5 std can be determined with the `cumulative distribution function (CDF)`
+  ```python
+  p_below = st.norm.cdf(-2.5)
+  # 0.006209665325776132
+  # If we have an infinite students then 62 will fall below z-score of -2.5
+  p_above = 1-st.norm.cdf(2.5)
+  # 0.006209665325776159
+  # Thera are 62 students will fall above z-score of 2.5
+  # st.norm.cdf(2.5) is number of students fall within z-score 2.5, which is the majority
+  ```
+- In frequentist statistics, if a p-value is less than 0.05, we say it's statistically significant
+- If we take sample and its p-value is less than 5%, we say it's statistically meaningful because it's unlikely to happen
+- A `null hypothesis` is the baseline assumption, for example, if we are handed a coin, we assume the coin is fair.
+- If we flip this coin and have 6 heads/tails in a row, we should reject the null hypothesis because the chance of this happening is , p=3%<5%, so this is not a fair coin.
+- `Percent point function (PPF)` is the inverse of `CDF`. It shows the values around the mean that are within the given z-score
+  ```python
+  st.norm.ppf(.025)
+  # -1.9599639845400545
+  # 95% of the values, except the 2.5% at the bottom, have z-score greater than -1.95
+  st.norm.ppf(.975)
+  # 1.9599639845400545
+  # 95% of the values except the 2.5% at the top have z-score less than 1.95
+  # so if a value has z-score < -1.95 or > 1.95 it's consider statistically signinficant
+  ```
