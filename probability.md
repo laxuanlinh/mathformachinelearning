@@ -473,3 +473,62 @@ plt.show()
   # 95% of the values except the 2.5% at the top have z-score less than 1.95
   # so if a value has z-score < -1.95 or > 1.95 it's consider statistically signinficant
   ```
+## `Single-sample t-test and degrees of freedom`
+- Single-sample t-test is a variant of the z-score
+  $$t=\frac{\overline{x}-u_0}{s_{\overline{x}}}$$
+  - $\overline{x}$ is the sample mean
+  - $u_0$ is a reference mean
+  - $s_{\overline{x}}$ is the sample standard error
+- Let's say you're a brewer, the baseline brewing processing yields 50L of stout. Using modified yeast, you obtain the following yields in 4 experiments
+  ```python
+  x = [48, 50, 54, 60]
+  ```
+- The t value is:
+  ```python
+  xbar = np.mean(x)
+  sx = st.sem(x)
+  t = (xbar - 50)/sx
+  # 1.1338934190276817
+  ```
+- We can convert t value to p value
+  ```python
+  def p_from_t(t, n):
+      return 2*st.t.cdf(-abs(t), n-1) # 2nd arg of t.cdf() is degrees of freedom
+
+  p_from_t(t, 4)
+  # 0.3392540508564543
+  # this is greater than 0.05 so this result is not statistically significant and doesn't vary much from the baseline
+  ```
+- Degress of freedom is if we have to pick a sample of $n$ elements and we already know the mean, the $n-1$ elements can be picked freely but in order to maintain the mean, the last element has to be picked specifically
+  ```python
+  st.ttest_1samp(x, 50)
+  # x is the vector and 50 is the mean
+  ```
+## `Independent t-tests`
+- To compare t-value from multiple samples
+  $$t=\frac{\overline
+  {x}-\overline{y}}{\sqrt{\frac{s^2_x}{n_x}+\frac{s^2_y}{n_y}}}$$
+  ```python
+  st.ttest_ind(f, m, equal_var=False)
+  # calculate t-test for means of 2 independent vectors f and m
+  # equal_var if true assume equal population variances, false use Welch's test
+  ```
+## `Paired t-test`
+- When we collect data from the same sample on 2 different occasions, we can use paired t-test to evaluate if the mean difference is 0 or not.
+- This is useful in cases such as a group of people taking diet, we can weight them before and after, pair 2 results of 1 person and see if the diet is significantly useful.
+  $$t=\frac{\overline{d}-\mu_0}{s_{\overline{d}}}$$
+  - $d$ is a vector of differences between $x$ and $y$
+  - $\overline{d}$ is the mean of the differences
+  - $\mu_0$ is typically 0, meaning the null hypothesis is that there is no difference between $x$ and $y$
+  - $s_{\overline{d}}$ is the standard error of the differences
+  ```python
+  st.ttest_rel(min15, min1)
+  # compare heart rate after 15 mins walking vs 1 min
+  ```
+## `Application of t-test in machine learning`
+- Compare models by running the models and collect samples. If the differences between different inputs are significant, the models may have biases or problems
+
+## `Confidence interval`
+- A range where the true mean is likely to be found with a certain probability
+- The 95% and 99% are often used as high probabilities.
+- 
