@@ -531,4 +531,147 @@ plt.show()
 ## `Confidence interval`
 - A range where the true mean is likely to be found with a certain probability
 - The 95% and 99% are often used as high probabilities.
-- 
+
+## `Correlation`
+- If we have 2 vectors $x$ and $y$, each element of $x$ pairs with each element of $y$, covariance provides measure of how related the variables are to each other.
+- The drawback of covariance is that it confounds the relative scale of 2 variables.
+- Correlation overcomes this by rescaling, measuring relatedness.
+
+## `R-Squared coefficient of determination`
+- $R^2$ is a number ranges from 0-1 that measures how well a statistical model predicts an outcome.
+- It's a proportion of variation in the independent variable that is predicted by the model.
+- If $R^2=0.75$ meaning 75% of variance of $x$ can be explained by $y$
+- $R^2$ is equal to Pearson's $r$ squared
+
+## `Causation`
+- Correlation doesn't imply causation on its own.
+- To be causation, there are 3 criterions:
+  - `Covariance`: 2 variables must vary together
+  - `Temporal precedence`: the causer must vary before the affected variable varies
+  - `Elimination of extraneous variable`: the variation cannot be caused by a third variable
+
+## `Correcting for Multiple comparisons`
+- Bonferroni correction: assuming in all tests, we assume overall threshold $\alpha=0.05$, if we conduct 10 tests, then each test $\alpha=0.005$
+
+## `Independent vs dependent variables`
+- Outcome:
+  - Dependent variables
+  - Denoted with $y$
+- Feature
+  - Independent variables
+  - May predict the outcome
+  - Denoted with $x$
+
+## `Linear regression model`
+  $$y=a+bx_1+cx_2+...+mx_n$$
+- $a$ is y-intercept because we rarely wants out models to predict $y=0$
+
+## `Fitting a line to points on a Cartesian plane`
+- If $y=\beta_0+\beta_1x+\epsilon$, we want $\epsilon$ to be close to 0 as possible so that $\hat{y}$ is close to $y$
+- In case of a model with a single predictor $x$ we can use linear least squares formula to calculate $\beta_1$
+  $$\hat{\beta_1}=\frac{cov(x,y)}{\sigma^2_x}$$
+  ```python
+  import numpy as np
+  import matplotlib.pyplot as plt
+  import seaborn as sns
+
+  iris = sns.load_dataset('iris')
+
+  x = iris.sepal_length
+  y = iris.petal_length
+  n = iris.sepal_width.size
+
+  sns.scatterplot(x=x, y=y)
+  xbar, ybar = x.mean(), y.mean()
+  product = []
+  for i in range(n):
+      product.append((x[i]-xbar)*(y[i]-ybar))
+
+  cov = sum(product)/n
+  beta1 = cov/np.var(x)
+  # 18584329782548417
+  # Once we have beta1, we can calculate beta0
+  beta0 = ybar - beta1*xbar
+  # -7.101443369602459 
+  xline = np.linspace(4, 8, 1000)
+  yline = beta0+beta1*xline
+
+  plt.plot(xline, yline, color='orange')
+  plt.show()
+  ```
+
+## `Ordinary least squares`
+- It's amethod to estimate the parameters of regression models with more than 1 predictor
+  $$y=\beta_0+\beta_1x_1+\beta_2x_2+\epsilon$$
+
+- Typicall a regression model has more equations than the number of unknowns thus we can't solve them by rearraging.
+- However we can use Moore-Penrose Psudoinverse or partial derivative calculus to estimate. The goal is to reduce the sum of squared errors (SSE)
+  $$\sum(\hat{y_i}-y_i)^2$$
+- For example given the equations
+  $$6=\beta_0+\beta_1$$
+  $$5=\beta_0+2\beta_1$$
+  $$7=\beta_0+3\beta_1$$
+  $$10=\beta_0+4\beta_1$$
+- The SSE is:
+  $$S(\beta_0,\beta_1)=4\beta_0^2 + 30\beta_1^2 + 20\beta_0\beta_1 - 56\beta_0 - 154\beta_1 + 210$$
+- This is a 2nd order equation with curves. To minimize SSE, we can use partial derivative to find where there is no slope of SSE with respect to $\beta_0$ and $\beta_1$
+  $$\frac{\partial S}{\partial \beta_0}=8\beta_0+20\beta_1-56=0$$
+  $$\frac{\partial S}{\partial \beta_1}=20\beta_0+60\beta_1-154=0$$
+
+## `Categorical Dummy features`
+- Categorical features can be represented using dummy features
+- Given 3 categories: setosa, versicolor, virginica. For equation of type setosa, the setosa's dummy feature is 1 while the other 2 are 0.
+
+## `Logistic regression to predict categories`
+- We can use logit function to predict binary outcome (hot dog or not hot dog)
+  $$log(\frac{p}{1-p})$$
+  ```python
+  import scipy.special as sc
+  sc.logit(0.5)
+  # 0.0
+  sc.logit(0.00000000000000000000000000001)
+  # -66.77496769682732
+  # the closer to 0 the closer logit to negative infinity
+  sc.expit(0.0)
+  # 0.5
+  sc.expit(-66.77496769682732)
+  # 1.000000000000007e-29
+  ```
+- Use logistic regression to predict if a passenger can survive the Titanic
+  ```python
+  import pandas as pd
+  import statsmodels.api as sm
+
+  titanic = sns.load_dataset('titanic')
+
+  gender = pd.get_dummies(titanic['sex'])
+  clas = pd.get_dummies(titanic['class'])
+  y = titanic.survived
+  # 0 0
+  # 1 1
+  # 2 1
+  # 3 1
+  # 4 0 
+  X = pd.concat([clas.First, clas.Second, gender.female, titanic.age], axis=1)
+  X = sm.add_constant(X)
+  # Add constant because we always want the y-intercept to be non-zero
+  #    const  First  Second  female    age
+  #0     1.0     0      0      0       22.0
+  #1     1.0     1      0      1       38.0
+  #2     1.0     0      0      1       26.0
+  #3     1.0     1      0      1       35.0
+  #4     1.0     0      0      0       35.0
+  model = sm.Logit(y, X, missing = 'drop')
+  result = model.fit()
+
+  beta = result.params
+  # const    -1.326394
+  # First     2.580625
+  # Second    1.270826
+  # female    2.522781
+  # age      -0.036985
+  linear_out = beta[0] + beta[1]*1 + beta[3]*1 + beta[4]*17
+  # If I'm in first class, female and age of 17, my surviving probability is
+  sc.expit(linear_out)
+  # 0.9588402300157423
+  ```
