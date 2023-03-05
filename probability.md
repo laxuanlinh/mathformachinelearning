@@ -675,3 +675,19 @@ plt.show()
   sc.expit(linear_out)
   # 0.9588402300157423
   ```
+
+## `Bayesian statistics`
+- Older than Frequentist statistics how ever today machine learning deals with big datasets
+- No arbitrary threshold 0.05
+- Used with smaller feature sets, prior information
+
+## `Prior probabilities`
+- Can be obtained from:
+  - Observations
+  - Existing literature / knowledge
+  - Tangentially-related model results
+  - Reasoning
+  - Hunches
+
+## `Bayes' Theorem`
+- 
